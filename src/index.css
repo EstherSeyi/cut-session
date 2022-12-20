@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+img {
+  max-inline-size: 100%;
+  block-size: auto;
+}
