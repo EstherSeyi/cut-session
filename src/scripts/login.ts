@@ -1,14 +1,18 @@
 import axios from "axios";
-import * as yup from "yup";
+import { z, ZodError } from "zod";
 class Login {
   form: Element;
   fields: string[];
   isLoading = false;
-  schema = {
-    username: yup.string().min(6).max(20).required(),
-    password: yup.string().min(6).required(),
-    accessType: yup.mixed().oneOf(["MERCHANT", "USER"]).required(),
-  };
+  loginSchema = z.object({
+    username: z
+      .string()
+      .min(6, "Username must be at least 6 characters long")
+      .max(20, "Username must not more than 20 characters long"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    accessType: z.enum(["MERCHANT", "USER"]),
+  });
+
   constructor(form: Element, fields: string[]) {
     this.form = form;
     this.fields = fields;
@@ -21,134 +25,109 @@ class Login {
 
     this.form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      let error = 0;
-      self.fields.forEach((field) => {
-        const input = document.querySelector(`#${field}`) as HTMLInputElement;
-        if (self.validateFields(input) === false) {
-          error++;
-        }
-      });
 
-      if (error === 0) {
-        const username = document.querySelector(
-          "#username"
-        ) as HTMLInputElement;
-        const password = document.querySelector(
-          "#password"
-        ) as HTMLInputElement;
+      /** Getting username and password from the DOM */
+      const username = document.querySelector("#username") as HTMLInputElement;
+      const password = document.querySelector("#password") as HTMLInputElement;
 
-        const merchantLogin = document.querySelector("#merchantLogin");
-        const userLogin = document.querySelector("#userLogin");
+      /** Login works for both merchant and user, deciding the user type*/
+      const merchantLogin = document.querySelector("#merchantLogin");
+      const userLogin = document.querySelector("#userLogin");
+      const userType = merchantLogin ? "MERCHANT" : userLogin ? "USER" : null;
 
-        const userType = merchantLogin ? "MERCHANT" : userLogin ? "USER" : null;
+      if (!userType) return; // if it's neither the merchant or user login forms stop execution
 
-        if (!userType) return;
-        const data = {
-          username: username.value,
-          password: password.value,
-          accessType: userType,
-        };
+      const data = {
+        username: username.value,
+        password: password.value,
+        accessType: userType,
+      };
 
-        const loginBtn = document.querySelector(
-          ".login-btn"
-        ) as HTMLButtonElement;
+      /**Validating data on submit */
+      const validate = await self.validateFormValues(data);
 
-        try {
-          self.isLoading = true;
-          loginBtn.disabled = true;
-          loginBtn.textContent = "Loading...";
-
-          const response = await axios({
-            method: "post",
-            url: "https://stoplight.io/mocks/pipeline/pipelinev2-projects/111233856/sign-in",
-            data,
-          });
-
-          localStorage.setItem("auth", response?.data?.token);
-          self.isLoading = false;
-          loginBtn.disabled = false;
-          loginBtn.textContent = "Continue";
-          if (userType === "USER") {
-            window.location.replace("/pages/sessions.html");
+      if (!validate.success) {
+        const { fieldErrors } = validate.errors;
+        self.fields.forEach((field) => {
+          const input = document.querySelector(`#${field}`) as HTMLInputElement;
+          if (fieldErrors[field]) {
+            self.displayError(input, true, fieldErrors[field][0]);
           } else {
-            window.location.replace("/pages/view-bookings.html");
+            self.displayError(input, false, null);
           }
-        } catch (error) {
-          self.isLoading = false;
-          loginBtn.disabled = false;
-          loginBtn.textContent = "Continue";
-          console.log({ Error: error });
+        });
+
+        return;
+      }
+
+      /**Getting the login button from the form */
+      const loginBtn = document.querySelector(
+        ".login-btn"
+      ) as HTMLButtonElement;
+
+      /**Net work request and activity to log user in */
+      try {
+        self.isLoading = true;
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Loading...";
+
+        const response = await axios({
+          method: "post",
+          url: "https://stoplight.io/mocks/pipeline/pipelinev2-projects/111233856/sign-in",
+          data,
+        });
+
+        localStorage.setItem("auth", response?.data?.token);
+        self.isLoading = false;
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Continue";
+        if (userType === "USER") {
+          window.location.replace("/pages/sessions.html");
+        } else {
+          window.location.replace("/pages/view-bookings.html");
         }
+      } catch (error) {
+        self.isLoading = false;
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Continue";
+        console.log({ Error: error });
       }
     });
   }
 
-  async validation(schema: any, data: any) {
+  /** Validate form field values */
+  async validateFormValues(
+    rawData: any
+  ): Promise<{ success: boolean; errors: any }> {
     try {
-      const res = await schema.isValid(data);
-      console.log({ res });
-      return res;
+      this.loginSchema.parse(rawData);
     } catch (error) {
-      console.log(error.message, "ERROR HERE");
-    }
-  }
-  // async validation(data: any) {
-  //   try {
-  //     const schema = yup.object().shape({
-  //       username: yup.string().min(6).max(20).required(),
-  //       password: yup.string().min(6).required(),
-  //       accessType: yup.mixed().oneOf(["MERCHANT", "USER"]).required(),
-  //     });
-
-  //     const res = await schema.validate(data);
-  //     console.log({ res });
-  //   } catch (error) {
-  //     console.log(error.message, "ERROR HERE");
-  //   }
-  // }
-
-  /**Validates fields  */
-  validateFields(field: HTMLInputElement) {
-    if (field.value.trim() === "") {
-      this.setStatus(
-        field,
-        `${field.previousElementSibling?.innerHTML} cannot be blank`,
-        "error"
-      );
-      return false;
-    } else {
-      if (field.type === "password") {
-        if (field.value.length < 6) {
-          this.setStatus(
-            field,
-            `${field.previousElementSibling?.innerHTML} must be 6 characters`,
-            "error"
-          );
-          return false;
-        }
+      if (error instanceof ZodError) {
+        return { success: false, errors: error.flatten() };
       }
-      this.setStatus(field, null, "success");
+      throw error;
     }
-    return true;
+
+    return { success: true, errors: null };
   }
 
-  /** Sets status and messages to display */
-  setStatus(field: HTMLInputElement, message: string | null, status: string) {
+  /** Display Errors on form */
+  displayError(
+    field: HTMLInputElement,
+    errored: boolean,
+    message: string | null
+  ) {
     const errorMessage = field.parentElement?.querySelector(
       ".error-message"
     ) as Element;
-    if (status === "success") {
+    if (!errored) {
       if (errorMessage) {
         errorMessage.innerHTML = "";
-        field.classList.remove("input-error");
       }
     }
 
-    if (status === "error") {
+    if (errored) {
       errorMessage.innerHTML = message ?? "";
-
-      // adding class styles for error
-      field.classList.add("input-error");
     }
   }
 }
