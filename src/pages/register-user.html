@@ -26,19 +26,53 @@
             </svg>
             <div class="sm:px-8 md:px-16 lg:px-32 mx-auto max-w-2xl">
               <h2 class="text-center font-bold text-2xl mb-0">
-                CutSesh for Merchants
+                CutSesh for Users
               </h2>
               <p class="text-center text-base mt-1 mb-4">
-                Create an account or log in to manage your business.
+                Create an account or log in to book/manage your photoshoot
+                sessions.
               </p>
-              <div id="login_form_container">
-                <form class="flex flex-col loginForm" id="merchantLogin">
+
+              <div id="user_signup_container">
+                <form class="flex flex-col">
                   <div class="flex flex-col">
+                    <label for="name" class="mb-1">Name</label>
+                    <input
+                      value=""
+                      id="name"
+                      name="name"
+                      class="px-4 py-2.5 border border-black_25 rounded"
+                    />
+                    <span class="error-message text-red text-sm"></span>
+                  </div>
+                  <div class="flex flex-col mt-4">
+                    <label for="dob" class="mb-1">Date Of Birth</label>
+                    <input
+                      type="date"
+                      value=""
+                      name="dob"
+                      id="dob"
+                      class="px-4 py-2.5 border border-black_25 rounded"
+                    />
+                    <span class="error-message text-red text-sm"></span>
+                  </div>
+                  <div class="flex flex-col mt-4">
+                    <label for="email" class="mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      value=""
+                      name="email"
+                      id="email"
+                      class="px-4 py-2.5 border border-black_25 rounded"
+                    />
+                    <span class="error-message text-red text-sm"></span>
+                  </div>
+                  <div class="flex flex-col mt-4">
                     <label for="username" class="mb-1">Username</label>
                     <input
                       value=""
-                      id="username"
                       name="username"
+                      id="username"
                       class="px-4 py-2.5 border border-black_25 rounded"
                     />
                     <span class="error-message text-red text-sm"></span>
@@ -46,6 +80,7 @@
                   <div class="flex flex-col mt-4">
                     <label for="password" class="mb-1">Password</label>
                     <input
+                      type="password"
                       value=""
                       name="password"
                       id="password"
@@ -55,37 +90,43 @@
                   </div>
                   <button
                     type="submit"
-                    class="login-btn px-4 py-2.5 mt-6 border border-black bg-secondary rounded text-white font-bold disabled:opacity-30"
+                    id="submit-btn"
+                    class="px-4 py-2.5 mt-6 border border-black bg-secondary rounded text-white font-bold disabled:opacity-30"
                   >
                     Continue
                   </button>
                 </form>
                 <p class="text-black font-bold text-center mt-1">
-                  Don't have an account?
-                  <a href="./register-merchant.html" class="text-accent_2"
-                    >Sign Up</a
+                  Already have an account?
+                  <a
+                    href="./user-auth.html"
+                    type="button"
+                    class="text-primary"
+                    id="toggle-user-forms"
                   >
+                    Sign In
+                  </a>
                 </p>
               </div>
 
               <div class="mt-4 flex justify-center"></div>
               <div class="mt-4 flex flex-col items-center">
                 <p class="text-black_50 font-bold">
-                  Do you have a user account?
+                  Do you have a merchant account?
                 </p>
-                <a href="./user-auth.html" class="text-accent_2"
-                  >Sign In as a user.</a
+                <a href="./merchant-auth.html" class="text-primary"
+                  >Sign In as a merchant.</a
                 >
               </div>
             </div>
           </div>
         </section>
         <section
-          class="h-screen sticky text-accent_2 hidden md:w-1/2 md:block -z-[1]"
+          class="h-screen sticky bg-primary hidden md:w-1/2 md:block -z-[1]"
         >
           <img
             class="h-screen w-full max-w-full object-cover object-center"
-            src="../assets/merchant_hero.jpeg"
+            src="../assets/user_hero.jpeg"
             alt=""
             width="50vw"
             height="100vh"
@@ -94,6 +135,6 @@
         </section>
       </div>
     </main>
-    <script defer type="module" src="../scripts/login.ts"></script>
+    <script defer type="module" src="../scripts/register-user.ts"></script>
   </body>
 </html>

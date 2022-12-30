@@ -31,14 +31,50 @@
               <p class="text-center text-base mt-1 mb-4">
                 Create an account or log in to manage your business.
               </p>
-              <div id="login_form_container">
-                <form class="flex flex-col loginForm" id="merchantLogin">
+
+              <div id="merchant_signup_container">
+                <form class="flex flex-col">
                   <div class="flex flex-col">
+                    <label for="name" class="mb-1">Name</label>
+                    <input
+                      value=""
+                      id="name"
+                      name="name"
+                      class="px-4 py-2.5 border border-black_25 rounded"
+                    />
+                    <span class="error-message text-red text-sm"></span>
+                  </div>
+
+                  <div class="flex flex-col mt-4">
+                    <label for="email" class="mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      value=""
+                      name="email"
+                      id="email"
+                      class="px-4 py-2.5 border border-black_25 rounded"
+                    />
+                    <span class="error-message text-red text-sm"></span>
+                  </div>
+                  <div class="flex flex-col mt-4">
+                    <label for="cityOfOperation" class="mb-1"
+                      >City Of Operation</label
+                    >
+                    <input
+                      type="string"
+                      value=""
+                      name="cityOfOperation"
+                      id="cityOfOperation"
+                      class="px-4 py-2.5 border border-black_25 rounded"
+                    />
+                    <span class="error-message text-red text-sm"></span>
+                  </div>
+                  <div class="flex flex-col mt-4">
                     <label for="username" class="mb-1">Username</label>
                     <input
                       value=""
-                      id="username"
                       name="username"
+                      id="username"
                       class="px-4 py-2.5 border border-black_25 rounded"
                     />
                     <span class="error-message text-red text-sm"></span>
@@ -46,6 +82,7 @@
                   <div class="flex flex-col mt-4">
                     <label for="password" class="mb-1">Password</label>
                     <input
+                      type="password"
                       value=""
                       name="password"
                       id="password"
@@ -54,17 +91,22 @@
                     <span class="error-message text-red text-sm"></span>
                   </div>
                   <button
+                    id="submit-btn"
                     type="submit"
-                    class="login-btn px-4 py-2.5 mt-6 border border-black bg-secondary rounded text-white font-bold disabled:opacity-30"
+                    class="px-4 py-2.5 mt-6 border border-black bg-secondary rounded text-white font-bold disabled:opacity-30"
                   >
                     Continue
                   </button>
                 </form>
                 <p class="text-black font-bold text-center mt-1">
-                  Don't have an account?
-                  <a href="./register-merchant.html" class="text-accent_2"
-                    >Sign Up</a
+                  Already have an account?
+                  <button
+                    type="button"
+                    class="text-accent_2"
+                    id="toggle-user-forms"
                   >
+                    Sign In
+                  </button>
                 </p>
               </div>
 
@@ -94,6 +136,6 @@
         </section>
       </div>
     </main>
-    <script defer type="module" src="../scripts/login.ts"></script>
+    <script defer type="module" src="../scripts/register-merchant.ts"></script>
   </body>
 </html>
