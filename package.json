@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "parcel",
-    "build": "parcel build",
+    "build": "parcel build 'src/**/*.html'",
     "dev": "parcel serve 'src/**/*.html' -p 3000"
   },
   "devDependencies": {
