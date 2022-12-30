@@ -15,6 +15,7 @@ module.exports = {
       accent: "#8ECAE6",
       accent_2: "#219EBC",
       black: "#262422",
+      red: "#FF3D00",
       black_75: "rgba(38, 36, 34, 0.75)",
       black_50: "rgba(38, 36, 34, 0.5)",
       black_25: "rgba(38, 36, 34, 0.25)",
