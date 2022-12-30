@@ -2,7 +2,6 @@ class Auth {
   coonstructor() {
     const auth = localStorage.getItem("auth");
     this.validateAuth(auth ?? "");
-    console.log("HELLO");
   }
 
   validateAuth(auth: string) {
