@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../index.css" rel="stylesheet" media="screen" />
     <title>Document</title>
-    <script defer type="module" src="../index.ts"></script>
-    <script defer type="module" src="../scripts/auth.ts"></script>
   </head>
   <body>
     <main class="font-mulish font-normal h-screen overflow-auto">
@@ -56,41 +54,9 @@
       <section class="w-11/12 mx-auto max-w-3xl">
         <p class="font-bold text-2xl mb-4 mt-5">Available Sessions</p>
         <div class="rounded-lg shadow px-4 py-2">
-          <ul>
-            <li class="flex justify-between border-b border-black_10 mt-4 pb-2">
-              <div class="flex items-center">
-                <div class="p-2 rounded-full mr-4 bg-accent">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#000"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-check w-5 h-5"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </div>
-                <!-- <div class="p-4 rounded-full border border-black_15 mr-4"></div> -->
-                <div>
-                  <p class="font-bold">Phot sesh</p>
-                  <p>1h 30m</p>
-                </div>
-              </div>
-              <div>Weekend</div>
-            </li>
-            <li class="flex justify-between border-b border-black_10 mt-4 pb-2">
-              <div class="flex items-center">
-                <div class="p-4 rounded-full border border-black_15 mr-4"></div>
-                <div>
-                  <p class="font-bold">Photo sesh</p>
-                  <p>1h 30m</p>
-                </div>
-              </div>
-              <div>Weeks day</div>
-            </li>
+          <ul id="session-list-container">
+           
+            
           </ul>
         </div>
       </section>
@@ -178,6 +144,6 @@
         </div>
       </div>
     </main>
-
+    <script defer type="module" src="../scripts/sessions.ts"></script>
   </body>
 </html>
