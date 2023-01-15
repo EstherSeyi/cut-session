@@ -1,6 +1,8 @@
-import axios from "axios";
-import { differenceInHours } from "date-fns";
-import { string } from "zod";
+import axios, { AxiosError } from "axios";
+import { z, ZodError } from "zod";
+// import { differenceInHours } from "date-fns";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 
 type SessionType = {
   bookingId: string;
@@ -14,20 +16,12 @@ type SessionType = {
   userId: string;
 };
 
-//  {
-//       bookingId: "string",
-//       bookingRef: "string",
-//       date: "string",
-//       endsAt: "string",
-//       notes: "string",
-//       sessionId: "string",
-//       startsAt: "string",
-//       title: "string",
-//       userId: "string",
-//     },
-
 class Sessions {
   selectedSessions: SessionType[] = [];
+  bookSessSchema = z.object({
+    notes: z.string().max(500, "Notes must not be more than 500 characters"),
+    title: z.string().max(75, 'title must not be more than 75 characters"),'),
+  });
   constructor() {
     this.displaySessions();
     this.showBookNow();
@@ -75,6 +69,7 @@ class Sessions {
       this.selectedSessions.splice(bookingExist, 1);
     }
     this.showBookNow();
+    this.handleSubmitSessionBooking(session);
   }
 
   async displaySessions() {
@@ -167,6 +162,75 @@ class Sessions {
     closeBtn?.addEventListener("click", () => {
       this.closeModal(backdrop!);
     });
+  }
+
+  async processBooking(session: SessionType) {
+    try {
+      const notes = document.querySelector("#notes") as HTMLTextAreaElement;
+      const title = document.querySelector("#title") as HTMLInputElement;
+      const backdrop = document.getElementById("booking-modal");
+
+      const data = {
+        sessionId: session.sessionId,
+        date: session.date,
+        userId: session.userId,
+        notes: notes?.value,
+        title: title?.value,
+      };
+
+      const res = await axios({
+        method: "post",
+        url: "https://stoplight.io/mocks/pipeline/pipelinev2-projects/111233856/bookings",
+        data,
+      });
+
+      this.closeModal(backdrop!);
+      this.showToast(`Session booked! Booking Ref: #${res?.data?.bookingRef}`);
+    } catch (error) {
+      this.handleBookError(error);
+    }
+  }
+
+  handleSubmitSessionBooking(session: SessionType) {
+    const bookSessForm = document.getElementById("book-session-form");
+    bookSessForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      await this.processBooking(session);
+    });
+  }
+
+  handleBookError(error: any) {
+    if (
+      (error as AxiosError)?.response?.status === 400 ||
+      (error as AxiosError)?.response?.status === 500
+    ) {
+      return this.showToast(
+        `Error occured!: ${
+          (
+            error as {
+              response: { data: { message: string; errors: string[] } };
+            }
+          ).response?.data?.message
+        }`
+      );
+    }
+
+    this.showToast(`Error occured!: ${(error as AxiosError).message}`);
+  }
+
+  showToast(text: string) {
+    Toastify({
+      text,
+      duration: 3000,
+      close: true,
+      gravity: "top",
+      position: "center",
+      stopOnFocus: true,
+      style: {
+        background: "#ffffff",
+        color: "#262422",
+      },
+    }).showToast();
   }
 }
 
