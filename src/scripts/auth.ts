@@ -5,7 +5,7 @@ class Auth {
   }
 
   validateAuth(auth: string) {
-    if (auth !== "1") {
+    if (!auth) {
       window.location.replace("/");
     } else {
     }
