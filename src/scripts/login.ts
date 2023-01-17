@@ -76,8 +76,14 @@ class Login {
           url: "https://stoplight.io/mocks/pipeline/pipelinev2-projects/111233856/sign-in",
           data,
         });
-
         localStorage.setItem("auth", response?.data?.token);
+        localStorage.setItem(
+          "ids",
+          JSON.stringify({
+            merchantId: response?.data?.merchantId,
+            userId: response?.data?.userId,
+          })
+        );
         self.isLoading = false;
         loginBtn.disabled = false;
         loginBtn.textContent = "Continue";
