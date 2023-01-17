@@ -8,7 +8,10 @@
     <title>Document</title>
   </head>
   <body>
-    <main class="font-mulish font-normal h-screen overflow-auto bg-black_05">
+    <main
+      class="font-mulish font-normal h-screen overflow-auto bg-black_05"
+      id="bookings-page"
+    >
       <header class="bg-secondary pt-8 relative">
         <div class="w-11/12 mx-auto flex justify-between items-center">
           <a>
@@ -22,27 +25,6 @@
                 d="M 10.8125 9.28125 L 4.09375 16 L 10.8125 22.71875 L 12.21875 21.28125 L 7.9375 17 L 28 17 L 28 15 L 7.9375 15 L 12.21875 10.71875 Z"
               /></svg
           ></a>
-          <a>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 32 32"
-              class="w-5 h-5 fill-white"
-            >
-              <defs>
-                <style>
-                  .cls-1 {
-                    fill-rule: evenodd;
-                  }
-                </style>
-              </defs>
-              <path
-                id="Close"
-                class="cls-1"
-                d="M894.788,1176.57l12.583-12.89a1.5,1.5,0,0,0-.022-2.11,1.478,1.478,0,0,0-2.1.02l-12.561,12.87-13.081-12.89a1.479,1.479,0,0,0-2.1.02,1.5,1.5,0,0,0,.02,2.11l13.062,12.87-13.062,12.87a1.5,1.5,0,0,0-.02,2.11,1.477,1.477,0,0,0,2.1.02l13.081-12.89,12.561,12.87a1.477,1.477,0,0,0,1.062.45,1.459,1.459,0,0,0,1.04-.43,1.5,1.5,0,0,0,.022-2.11Z"
-                transform="translate(-877.094 -1161.16)"
-              />
-            </svg>
-          </a>
         </div>
         <div class="w-11/12 sm:w-10/12 mx-auto">
           <p class="text-white text-opacity-30">Your Studio</p>
@@ -55,22 +37,31 @@
         >
           <ul class="flex flex-col sm:flex-row">
             <li
-              class="px-2 py-2 bg-secondary text-white rounded-xl basis-1/2 text-center"
+              class="px-2 py-2 rounded-xl basis-1/2 text-center transition-all bg-secondary text-white"
+              id="booking-item"
             >
-              Your Bookings
+              <button class="w-full" id="bookings-list-link">
+                Your Bookings
+              </button>
             </li>
-            <li class="px-2 py-2 rounded-xl basis-1/2 text-center">
-              New Session
+            <li
+              class="px-2 py-2 rounded-xl basis-1/2 text-center nav-item transition-all"
+              id="new-session-item"
+            >
+              <button class="w-full" id="new-session-link">New Session</button>
             </li>
           </ul>
         </nav>
       </header>
-      <!-- <section class="w-11/12 mx-auto max-w-4xl mt-16">
+      <section
+        class="w-11/12 mx-auto max-w-2xl mt-16 transition-all"
+        id="bookings-list"
+      >
         <p class="font-bold text-2xl mb-4 mt-5">Your Bookings</p>
         <section class="flex items-start">
           <div class="w-full sm:basis-1/2 mr-4">
-            <ul>
-              <li
+            <ul id="session-bookings-container">
+              <!-- <li
                 class="flex items-center border border-black_10 p-4 rounded shadow-sm mb-4"
               >
                 <div
@@ -81,19 +72,7 @@
                   <p class="text-black_25 text-sm mb-2">1 hour ago</p>
                   <p>From 4:30pm to 6:30pm next week Saturday.</p>
                 </div>
-              </li>
-              <li
-                class="flex items-center border border-black_10 p-4 rounded shadow-sm mb-4"
-              >
-                <div
-                  class="p-8 border border-black_25 rounded-full bg-accent opacity-25 mr-2"
-                ></div>
-                <div>
-                  <p class="font-bold">New Session Booking</p>
-                  <p class="text-black_25 text-sm mb-2">1 hour ago</p>
-                  <p>From 4:30pm to 6:30pm next week Saturday.</p>
-                </div>
-              </li>
+              </li> -->
             </ul>
           </div>
           <div
@@ -113,48 +92,62 @@
             </div>
           </div>
         </section>
-      </section> -->
-      <section class="w-11/12 mx-auto max-w-2xl mt-16">
+      </section>
+      <section
+        class="w-11/12 mx-auto max-w-2xl mt-16 hidden transition-all"
+        id="new-session"
+      >
         <p class="font-bold text-2xl mb-4 mt-5">New Session</p>
         <div>
-          <form>
+          <form id="create-session">
             <div class="flex flex-col">
               <label class="mb-1">Session Type</label>
-              <select class="px-4 py-2.5 border border-black_25 rounded">
-                <option>Week Day</option>
-                <option>Weekend</option>
+              <select
+                id="type"
+                class="px-4 py-2.5 border border-black_25 rounded"
+              >
+                <option value="WeekDay">Week Day</option>
+                <option value="WeekEnd">Weekend</option>
               </select>
+              <span class="error-message text-red text-sm"></span>
             </div>
             <div class="mt-4 flex">
               <div class="flex flex-col basis-1/2 mr-4">
                 <label for="startsAt" class="mb-1">From</label>
                 <input
                   type="time"
+                  step="2"
                   value=""
                   name="startsAt"
                   id="startsAt"
                   class="px-4 py-2.5 border border-black_25 rounded"
                 />
+                <span class="error-message text-red text-sm"></span>
               </div>
               <div class="flex flex-col basis-1/2">
                 <label for="endsAt" class="mb-1">To</label>
                 <input
                   type="time"
+                  step="2"
                   value=""
                   name="endsAt"
                   id="endsAt"
                   class="px-4 py-2.5 border border-black_25 rounded"
                 />
+                <span class="error-message text-red text-sm"></span>
               </div>
             </div>
             <div class="flex justify-center sm:justify-end">
               <button
                 class="px-4 py-2.5 mt-6 border border-primary bg-primary text-white rounded font-bold mr-2.5"
+                type="reset"
               >
                 Reset
               </button>
               <button
-                class="px-4 py-2.5 mt-6 border border-black bg-secondary rounded text-white font-bold"
+                type="submit"
+                id="submit-session"
+                class="px-4 py-2.5 mt-6 border border-black bg-secondary rounded text-white font-bold disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -163,5 +156,6 @@
         </div>
       </section>
     </main>
+    <script defer type="module" src="../scripts/view-bookings.ts"></script>
   </body>
 </html>
