@@ -4,6 +4,8 @@ import { z, ZodError } from "zod";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
+import Auth from "./auth";
+
 type SessionType = {
   bookingId: string;
   bookingRef: string;
@@ -16,13 +18,15 @@ type SessionType = {
   userId: string;
 };
 
-class Sessions {
+class Sessions extends Auth {
   selectedSessions: SessionType[] = [];
   bookSessSchema = z.object({
     notes: z.string().max(500, "Notes must not be more than 500 characters"),
     title: z.string().max(75, 'title must not be more than 75 characters"),'),
   });
   constructor() {
+    super();
+    super.coonstructor();
     this.displaySessions();
     this.showBookNow();
     this.handleModal();

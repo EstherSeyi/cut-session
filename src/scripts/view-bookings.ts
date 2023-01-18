@@ -3,7 +3,9 @@ import { z, ZodError } from "zod";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
-class MerchantDashboard {
+import Auth from "./auth";
+
+class MerchantDashboard extends Auth {
   isLoading = false;
   isSubmitting = false;
   fields = ["type", "startsAt", "endsAt"];
@@ -13,6 +15,8 @@ class MerchantDashboard {
     endsAt: z.string().min(8, "Please provide valid time"),
   });
   constructor() {
+    super();
+    super.coonstructor();
     this.toggleBtwlistAndForm();
     this.displaySessions();
     this.handleSubmitSession();
