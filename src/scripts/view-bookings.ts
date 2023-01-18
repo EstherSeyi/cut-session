@@ -175,9 +175,19 @@ class MerchantDashboard {
     try {
       const { data: sessionBookings } = await self.getAllSessionBookings();
 
-      const container = document.getElementById("session-bookings-container");
+      const container = document.getElementById(
+        "session-bookings-container"
+      ) as Element;
 
-      if (!sessionBookings?.length) return;
+      if (!sessionBookings?.length) {
+        const bookingDetsContainer = document.getElementById(
+          "booking-details-container"
+        );
+        bookingDetsContainer!.innerHTML = `<div class="fixed top-1/2 left-1/2 -mt-[50px] -ml-[50px]">
+       No sessions booked yet!
+        </div>`;
+        return;
+      }
 
       const [firstItem] = sessionBookings;
       this.displayDescription(firstItem);
