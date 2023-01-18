@@ -177,6 +177,11 @@ class MerchantDashboard {
 
       const container = document.getElementById("session-bookings-container");
 
+      if (!sessionBookings?.length) return;
+
+      const [firstItem] = sessionBookings;
+      this.displayDescription(firstItem);
+
       sessionBookings?.forEach((sessionBooking) => {
         const listItem = document.createElement("li");
         listItem.classList.add(
@@ -205,14 +210,39 @@ class MerchantDashboard {
         listItem.classList.add("cursor-pointer");
         listItem.innerHTML = html;
         container?.appendChild(listItem);
-        // listItem.addEventListener("click", () =>
-        //   self.handleClick(listItem, session)
-        // );
+        listItem.addEventListener("click", () => {
+          this.displayDescription(sessionBooking);
+        });
       });
     } catch (error) {
       this.handleServerError(error);
     }
   }
+
+  displayDescription(sessionBooking: any) {
+    const bookingDate = document.getElementById(
+      "details_booking-date"
+    ) as HTMLParagraphElement;
+    const startsAtDetail = document.getElementById(
+      "details_startsAt"
+    ) as HTMLParagraphElement;
+    const endsAtDetail = document.getElementById(
+      "details_endsAt"
+    ) as HTMLParagraphElement;
+    const userTopicDetail = document.getElementById(
+      "user-topic"
+    ) as HTMLParagraphElement;
+    const userNotesDetail = document.getElementById(
+      "user-notes"
+    ) as HTMLParagraphElement;
+    bookingDate!.innerText = sessionBooking.date;
+    startsAtDetail!.innerText = `Starts At: ${sessionBooking.startsAt}`;
+    endsAtDetail!.innerText = `Ends At: ${sessionBooking.endsAt}`;
+    userTopicDetail!.innerText =
+      sessionBooking.title ?? `User Didn't provide notes`;
+    userNotesDetail!.innerText = sessionBooking.notes ?? "N/A";
+  }
+
   /** Display Errors on form */
   displayError(
     field: HTMLInputElement,
