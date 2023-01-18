@@ -1,10 +1,10 @@
 class Auth {
   coonstructor() {
     const auth = localStorage.getItem("auth");
-    this.validateAuth(auth ?? "");
+    this.validateAuth(auth);
   }
 
-  validateAuth(auth: string) {
+  validateAuth(auth: string | null) {
     if (!auth) {
       window.location.replace("/");
     } else {
@@ -16,5 +16,7 @@ class Auth {
     window.location.replace("/");
   }
 }
+
+new Auth();
 
 export default Auth;
