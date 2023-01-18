@@ -60,35 +60,22 @@
         <p class="font-bold text-2xl mb-4 mt-5">Your Bookings</p>
         <section class="flex items-start">
           <div class="w-full sm:basis-1/2 mr-4">
-            <ul id="session-bookings-container">
-              <!-- <li
-                class="flex items-center border border-black_10 p-4 rounded shadow-sm mb-4"
-              >
-                <div
-                  class="p-8 border border-black_25 rounded-full bg-accent opacity-25 mr-2"
-                ></div>
-                <div>
-                  <p class="font-bold">New Session Booking</p>
-                  <p class="text-black_25 text-sm mb-2">1 hour ago</p>
-                  <p>From 4:30pm to 6:30pm next week Saturday.</p>
-                </div>
-              </li> -->
-            </ul>
+            <ul id="session-bookings-container"></ul>
           </div>
           <div
             class="hidden sm:block basis-1/2 h-[300px] bg-accent bg-opacity-5 rounded-lg p-4"
           >
             <p class="font-bold">About this Booking;</p>
-            <p class="text-black_25 text-sm mb-2">1 hour ago</p>
-            <p>Starts At: 4:30pm 12/12/2022</p>
-            <p>Ends At: 8:30pm 12/12/2022</p>
+            <p
+              class="text-black_25 text-sm mb-2 transistion-all"
+              id="details_booking-date"
+            ></p>
+            <p class="transistion-all" id="details_startsAt"></p>
+            <p class="transistion-all" id="details_endsAt"></p>
             <div class="mt-4">
               <p class="mb-1">User's Notes</p>
-              <p class="font-bold">Topic From Customer</p>
-              <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsincluding versions of Lorem Ipsum.
-              </p>
+              <p class="font-bold transistion-all" id="user-topic"></p>
+              <p class="transistion-all" id="user-notes"></p>
             </div>
           </div>
         </section>
