@@ -1,7 +1,10 @@
 import axios from "axios";
-import { string, z, ZodError } from "zod";
+import { string, z } from "zod";
+
+import FormHelpers from "./form-helpers";
 
 class RegisterMerchant {
+  formHelpers;
   form: Element;
   fields: string[];
   isLoading = false;
@@ -21,7 +24,8 @@ class RegisterMerchant {
     password: z.string().min(6, "Password must be at least 6 characters long"),
   });
 
-  constructor(form: Element, fields: string[]) {
+  constructor(form: Element, fields: string[], formHelpers: FormHelpers) {
+    this.formHelpers = formHelpers;
     this.form = form;
     this.fields = fields;
     this.validateOnSubmit();
@@ -52,16 +56,23 @@ class RegisterMerchant {
       };
 
       /**Validating data on submit */
-      const validate = await self.validateFormValues(data);
+      const validate = await this.formHelpers.validateFormValues(
+        data,
+        this.merchantRegSchema
+      );
 
       if (!validate.success) {
         const { fieldErrors } = validate.errors;
         self.fields.forEach((field) => {
           const input = document.querySelector(`#${field}`) as HTMLInputElement;
           if (fieldErrors[field]) {
-            self.displayError(input, true, fieldErrors[field][0]);
+            self.formHelpers.displayInputError(
+              input,
+              true,
+              fieldErrors[field][0]
+            );
           } else {
-            self.displayError(input, false, null);
+            self.formHelpers.displayInputError(input, false, null);
           }
         });
 
@@ -96,49 +107,13 @@ class RegisterMerchant {
       }
     });
   }
-
-  /** Validate form field values */
-  async validateFormValues(
-    rawData: any
-  ): Promise<{ success: boolean; errors: any }> {
-    try {
-      this.merchantRegSchema.parse(rawData);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return { success: false, errors: error.flatten() };
-      }
-      throw error;
-    }
-
-    return { success: true, errors: null };
-  }
-
-  /** Display Errors on form */
-  displayError(
-    field: HTMLInputElement,
-    errored: boolean,
-    message: string | null
-  ) {
-    const errorMessage = field.parentElement?.querySelector(
-      ".error-message"
-    ) as Element;
-    if (!errored) {
-      if (errorMessage) {
-        errorMessage.innerHTML = "";
-      }
-    }
-
-    if (errored) {
-      errorMessage.innerHTML = message ?? "";
-    }
-  }
 }
 
 const form = document.querySelector("#merchant_signup_container");
 
 if (form) {
   const fields = ["name", "email", "cityOfOperation", "username", "password"];
-  const validator = new RegisterMerchant(form, fields);
+  new RegisterMerchant(form, fields, new FormHelpers());
 }
 
 if (module.hot) {

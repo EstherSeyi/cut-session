@@ -1,10 +1,9 @@
 import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 // import { differenceInHours } from "date-fns";
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
 
 import Auth from "./auth";
+import AppToasts from "./app-toasts";
 
 type SessionType = {
   bookingId: string;
@@ -18,18 +17,21 @@ type SessionType = {
   userId: string;
 };
 
-class Sessions extends Auth {
+class Sessions {
+  auth;
+  appToasts;
   selectedSessions: SessionType[] = [];
   bookSessSchema = z.object({
     notes: z.string().max(500, "Notes must not be more than 500 characters"),
     title: z.string().max(75, 'title must not be more than 75 characters"),'),
   });
-  constructor() {
-    super();
-    super.coonstructor();
+  constructor(auth: Auth, appToasts: AppToasts) {
+    this.auth = auth;
+    this.appToasts = appToasts;
     this.displaySessions();
     this.showBookNow();
     this.handleModal();
+    this.auth.coonstructor();
   }
 
   showBookNow() {
@@ -189,9 +191,11 @@ class Sessions extends Auth {
       });
 
       this.closeModal(backdrop!);
-      this.showToast(`Session booked! Booking Ref: #${res?.data?.bookingRef}`);
+      this.appToasts.showToast(
+        `Session booked! Booking Ref: #${res?.data?.bookingRef}`
+      );
     } catch (error) {
-      this.handleBookError(error);
+      this.appToasts.handleServerError(error);
     }
   }
 
@@ -202,40 +206,6 @@ class Sessions extends Auth {
       await this.processBooking(session);
     });
   }
-
-  handleBookError(error: any) {
-    if (
-      (error as AxiosError)?.response?.status === 400 ||
-      (error as AxiosError)?.response?.status === 500
-    ) {
-      return this.showToast(
-        `Error occured!: ${
-          (
-            error as {
-              response: { data: { message: string; errors: string[] } };
-            }
-          ).response?.data?.message
-        }`
-      );
-    }
-
-    this.showToast(`Error occured!: ${(error as AxiosError).message}`);
-  }
-
-  showToast(text: string) {
-    Toastify({
-      text,
-      duration: 3000,
-      close: true,
-      gravity: "top",
-      position: "center",
-      stopOnFocus: true,
-      style: {
-        background: "#ffffff",
-        color: "#262422",
-      },
-    }).showToast();
-  }
 }
 
-new Sessions();
+new Sessions(new Auth(), new AppToasts());

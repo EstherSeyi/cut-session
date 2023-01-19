@@ -1,11 +1,14 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { z, ZodError } from "zod";
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
 
 import Auth from "./auth";
+import AppToasts from "./app-toasts";
+import FormHelpers from "./form-helpers";
 
-class MerchantDashboard extends Auth {
+class MerchantDashboard {
+  formHelpers;
+  auth;
+  appToasts;
   isLoading = false;
   isSubmitting = false;
   fields = ["type", "startsAt", "endsAt"];
@@ -14,12 +17,18 @@ class MerchantDashboard extends Auth {
     startsAt: z.string().min(8, "Please provide valid time"),
     endsAt: z.string().min(8, "Please provide valid time"),
   });
-  constructor() {
-    super();
-    super.coonstructor();
+  constructor(
+    auth: Auth | null,
+    appToasts: AppToasts | null,
+    formHelpers: FormHelpers
+  ) {
+    this.auth = auth;
+    this.appToasts = appToasts;
+    this.formHelpers = formHelpers;
     this.toggleBtwlistAndForm();
     this.displaySessions();
     this.handleSubmitSession();
+    this.auth?.coonstructor();
   }
 
   handleSubmitSession() {
@@ -27,7 +36,6 @@ class MerchantDashboard extends Auth {
     const sessionForm = document.getElementById("create-session");
     sessionForm?.addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const sessionType = document.getElementById("type") as HTMLSelectElement;
       const endsAt = document.getElementById("endsAt") as HTMLInputElement;
       const startsAt = document.getElementById("startsAt") as HTMLInputElement;
@@ -39,16 +47,23 @@ class MerchantDashboard extends Auth {
       };
 
       /**Validating data on submit */
-      const validate = await self.validateFormValues(data);
+      const validate = await self.formHelpers.validateFormValues(
+        data,
+        self.sessionSchema
+      );
 
       if (!validate.success) {
         const { fieldErrors } = validate.errors;
         self.fields.forEach((field) => {
           const input = document.querySelector(`#${field}`) as HTMLInputElement;
           if (fieldErrors[field]) {
-            self.displayError(input, true, fieldErrors[field][0]);
+            self.formHelpers.displayInputError(
+              input,
+              true,
+              fieldErrors[field][0]
+            );
           } else {
-            self.displayError(input, false, null);
+            self.formHelpers.displayInputError(input, false, null);
           }
         });
 
@@ -79,58 +94,27 @@ class MerchantDashboard extends Auth {
       ) as HTMLFormElement;
       const idsStringObject = localStorage.getItem("ids");
       if (idsStringObject) {
-        //   const ids = JSON.parse(idsStringObject);
-        //   const merchantId = ids.merchantId;
+        // const ids = JSON.parse(idsStringObject);
+        // const merchantId = ids.merchantId;
 
         // temp dummy merchantId
-        const dummyMerchantId = "54654766867675453";
+        const merchantId = "54654766867675453";
         const response = await axios({
           method: "post",
-          url: `https://stoplight.io/mocks/pipeline/pipelinev2-projects/111233856/studios/${dummyMerchantId}`,
+          url: `https://stoplight.io/mocks/pipeline/pipelinev2-projects/111233856/studios/${merchantId}`,
           data,
         });
 
         submitBtn.disabled = false;
         this.isSubmitting = false;
-        this.showToast(`Session Created!`);
+        this.appToasts?.showToast(`Session Created!`);
         sessionForm.reset();
       }
     } catch (error) {
       this.isSubmitting = false;
       submitBtn.disabled = false;
-      this.handleServerError(error);
+      this.appToasts?.handleServerError(error);
     }
-  }
-
-  /** Validate form field values */
-  async validateFormValues(
-    rawData: any
-  ): Promise<{ success: boolean; errors: any }> {
-    try {
-      this.sessionSchema.parse(rawData);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return { success: false, errors: error.flatten() };
-      }
-      throw error;
-    }
-
-    return { success: true, errors: null };
-  }
-
-  showToast(text: string) {
-    Toastify({
-      text,
-      duration: 3000,
-      close: true,
-      gravity: "top",
-      position: "center",
-      stopOnFocus: true,
-      style: {
-        background: "#ffffff",
-        color: "#262422",
-      },
-    }).showToast();
   }
 
   toggleBtwlistAndForm() {
@@ -229,7 +213,7 @@ class MerchantDashboard extends Auth {
         });
       });
     } catch (error) {
-      this.handleServerError(error);
+      this.appToasts?.handleServerError(error);
     }
   }
 
@@ -256,49 +240,10 @@ class MerchantDashboard extends Auth {
       sessionBooking.title ?? `User Didn't provide notes`;
     userNotesDetail!.innerText = sessionBooking.notes ?? "N/A";
   }
-
-  /** Display Errors on form */
-  displayError(
-    field: HTMLInputElement,
-    errored: boolean,
-    message: string | null
-  ) {
-    const errorMessage = field.parentElement?.querySelector(
-      ".error-message"
-    ) as Element;
-    if (!errored) {
-      if (errorMessage) {
-        errorMessage.innerHTML = "";
-      }
-    }
-
-    if (errored) {
-      errorMessage.innerHTML = message ?? "";
-    }
-  }
-
-  handleServerError(error: any) {
-    if (
-      (error as AxiosError)?.response?.status === 400 ||
-      (error as AxiosError)?.response?.status === 500
-    ) {
-      return this.showToast(
-        `Error occured!: ${
-          (
-            error as {
-              response: { data: { message: string; errors: string[] } };
-            }
-          ).response?.data?.message
-        }`
-      );
-    }
-
-    this.showToast(`Error occured!: ${(error as AxiosError).message}`);
-  }
 }
 
 const bookingsPage = document.querySelector("#bookings-page");
 
 if (bookingsPage) {
-  new MerchantDashboard();
+  new MerchantDashboard(new Auth(), new AppToasts(), new FormHelpers());
 }
